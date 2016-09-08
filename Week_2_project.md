@@ -1,20 +1,11 @@
----
-title: "Repro. Research Week 2 project"
-output: 
-  html_document: 
-    keep_md: yes
----
+# Repro. Research Week 2 project
 
-```{r setoptions, echo=FALSE}
 
-##opts_chunk&set(echo = FALSE, fig.path="figure/", cache=TRUE)
-fig.path="figure/"
-
-```
 
 ## Loading and preprocessing data
 
-```{r}
+
+```r
 data <- read.csv("activity.csv")
 ```
 
@@ -22,13 +13,15 @@ data <- read.csv("activity.csv")
 
 Remove missing values
 
-```{r, echo=TRUE}
+
+```r
 data_no_na <- data[is.na(data[,"steps"]) == FALSE,]
 ```
 
 Calculate the total number of steps taken per day
 
-```{r}
+
+```r
 per_day <- data.frame(table(data_no_na[,"date"]), stringsAsFactors = FALSE)
 colnames(per_day) <- c("date", "freq")
 
@@ -39,17 +32,32 @@ for (x in 1:nrow(per_day)) {
 
 Make a histogram of the total number of steps taken each day
 
-```{r, echo=TRUE}
+
+```r
 hist(per_day[,"total_steps"], main = "Total steps per day", xlab = "Days", ylab = "Steps")
 ```
 
+![](Week_2_project_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
 Calculate and report the mean and median of the total number of steps taken per day
 
-```{r, echo=TRUE}
+
+```r
 steps_mean <- mean(per_day[,"total_steps"])
 steps_median <- median(per_day[,"total_steps"])
 print(paste("Mean: ",steps_mean))
+```
+
+```
+## [1] "Mean:  9354.22950819672"
+```
+
+```r
 print(paste("Mean: ",steps_median))
+```
+
+```
+## [1] "Mean:  10395"
 ```
 
 ## What is the average daily activity pattern?
@@ -57,7 +65,8 @@ print(paste("Mean: ",steps_median))
 Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
-```{r, echo=TRUE}
+
+```r
 per_interval <- data.frame(table(data_no_na[,"interval"]), stringsAsFactors = FALSE)
 colnames(per_interval) <- c("interval", "freq")
 
@@ -69,25 +78,38 @@ plot(per_interval[,"interval"], per_interval[,"mean_steps"], main="Avg. steps pe
      xlab="Interval", ylab="Avg. steps")
 ```
 
+![](Week_2_project_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r, echo=TRUE}
+
+```r
 max_steps <- max(per_interval[,"mean_steps"])
 top_interval <- per_interval[per_interval[,"mean_steps"] == max_steps, "interval"]
 print(paste("Top steps interval:", top_interval))
 ```
 
+```
+## [1] "Top steps interval: 835"
+```
+
 ## Imputing missing values
 
 Calculate and report the total number of missing values in the dataset 
-```{r, echo=TRUE}
+
+```r
 toal_nas <- nrow(data[is.na(data[,"steps"]) == TRUE,])
 print(paste("Total missing values:", toal_nas))
 ```
 
+```
+## [1] "Total missing values: 2304"
+```
+
 Devise a strategy for filling in all of the missing values in the dataset. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r, echo=TRUE}
+
+```r
 data_mo_mv <- data
 
 for (x in 1:nrow(data_mo_mv)) {
@@ -99,7 +121,8 @@ for (x in 1:nrow(data_mo_mv)) {
 ```
 
 Make a histogram of the total number of steps taken each day 
-```{r, echo=TRUE}
+
+```r
 per_day_2 <- data.frame(table(data_mo_mv[,"date"]), stringsAsFactors = FALSE)
 colnames(per_day_2) <- c("date", "freq")
 
@@ -110,38 +133,77 @@ for (x in 1:nrow(per_day_2)) {
 hist(per_day_2[,"total_steps"], main = "Total steps per day", xlab = "Days", ylab = "Total steps")
 ```
 
+![](Week_2_project_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
 Calculate and report the mean and median total number of steps taken per day.
 
-```{r, echo=TRUE}
+
+```r
 steps_mean_2 <- mean(per_day_2[,"total_steps"])
 steps_median_2 <- median(per_day_2[,"total_steps"])
 print(paste("Mean: ",steps_mean_2))
+```
+
+```
+## [1] "Mean:  10766.1886792453"
+```
+
+```r
 print(paste("Mean: ",steps_median_2))
+```
+
+```
+## [1] "Mean:  10766.1886792453"
 ```
 
 Do these values differ from the estimates from the first part of the assignment?
 
-```{r, echo=TRUE}
+
+```r
 mean_dif <- steps_mean_2 - steps_mean
 median_dif <- steps_median_2 - steps_median
 print(paste("Mean values differ in: ",mean_dif))
+```
+
+```
+## [1] "Mean values differ in:  1411.95917104856"
+```
+
+```r
 print(paste("Median values differ in: ",median_dif))
+```
+
+```
+## [1] "Median values differ in:  371.188679245282"
 ```
 
 What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r, echo=TRUE}
+
+```r
 mean_impact <- (100*mean_dif) / steps_mean
 median_impact <- (100*median_dif) / steps_median
 print(paste("Mean increases in",mean_impact, "%."))
+```
+
+```
+## [1] "Mean increases in 15.0943396226415 %."
+```
+
+```r
 print(paste("Median increases in: ",median_impact, "%."))
+```
+
+```
+## [1] "Median increases in:  3.57083866517828 %."
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r, echo=TRUE}
+
+```r
 data_mo_mv[,"date"] <- as.Date(data_mo_mv[,"date"])
 data_mo_mv[,"weekday_type"] <- weekdays(data_mo_mv[,"date"])
 
@@ -165,7 +227,8 @@ for (x in 1:nrow(per_week_moment)) {
 
 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r, echo=TRUE}
+
+```r
 week_days <- per_week_moment[per_week_moment[,"week_moment"]== "Weekday",]
 week_days[,"interval"] <- as.numeric(week_days[,"interval"])
 week_end <- per_week_moment[per_week_moment[,"week_moment"]== "Weekend",]
@@ -176,4 +239,6 @@ plot(week_days[,"interval"], week_days[,"mean_steps"], type="l", col="blue",
 lines(week_end[,"interval"], week_end[,"mean_steps"], type="l", col="red")
 legend ("topright", c("Weekdays", "Weekends"), col = c("blue", "red"), lty = 1)
 ```
+
+![](Week_2_project_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
